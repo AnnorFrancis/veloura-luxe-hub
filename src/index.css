@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Tropical Modernism Palette */
+  --bg-primary: #FAF9F6; /* Warm Ivory/Cream */
+  --bg-secondary: #F2EFE9; /* Slightly darker cream for contrast */
+  --bg-tertiary: #E8E4DB;
+  
+  --text-primary: #2C3531; /* Very dark green/charcoal */
+  --text-secondary: #58645C; /* Muted forest tone */
+  --text-muted: #8B958E;
+  
+  --accent-wood: #8B4513; /* Rich Mahogany/Teak */
+  --accent-wood-light: #A0522D;
+  --accent-forest: #1F3F2F; /* Deep Forest Green */
+  --accent-terracotta: #C86C51; /* Subtle earth/clay tone */
+  
+  --surface-white: #FFFFFF;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --border-light: rgba(44, 53, 49, 0.08);
+
+  /* Typography */
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, sans-serif;
+
+  /* Spacing & Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --nav-height: 90px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Base Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--accent-forest);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-forest);
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+.section-padding {
+  padding: clamp(80px, 12vw, 150px) 0;
+}
+
+.text-reveal-wrapper {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}

@@ -1,0 +1,237 @@
+.hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.visualsContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageMain {
+  width: 80%;
+  height: 70%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.imageMain img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageSecondary1 {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 250px;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 4px solid var(--surface-white);
+  z-index: 2;
+}
+
+.imageSecondary1 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageSecondary2 {
+  position: absolute;
+  bottom: 15%;
+  left: -5%;
+  width: 280px;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 4px solid var(--surface-white);
+  z-index: 2;
+}
+
+.imageSecondary2 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.trustBadge {
+  position: absolute;
+  bottom: 8%;
+  right: 15%;
+  background-color: var(--surface-white);
+  padding: 16px 24px;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 3;
+}
+
+.badgeInner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badgeStar {
+  color: var(--accent-wood);
+  font-size: 1.2rem;
+}
+
+.badgeText {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--accent-forest);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none; /* Let clicks pass through to background */
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(24px, 5vw, 60px);
+}
+
+/* Gradient to ensure text readability over images */
+.overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(250, 249, 246, 1) 0%, rgba(250, 249, 246, 0.95) 40%, rgba(250, 249, 246, 0) 100%);
+  z-index: -1;
+}
+
+@media (max-width: 1024px) {
+  .visualsContainer {
+    width: 100%;
+    opacity: 0.3;
+  }
+  .overlay::before {
+    width: 100%;
+    background: linear-gradient(0deg, rgba(250, 249, 246, 1) 0%, rgba(250, 249, 246, 0.8) 100%);
+  }
+}
+
+
+.content {
+  max-width: 600px;
+  pointer-events: auto; /* Re-enable clicks for buttons */
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-terracotta);
+  border: 1px solid var(--accent-terracotta);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: var(--accent-forest);
+  margin-bottom: 24px;
+  line-height: 1.1;
+}
+
+.title span {
+  display: block;
+}
+
+.title i {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--accent-wood);
+}
+
+.description {
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+.ctaGroup {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.primaryBtn {
+  background-color: var(--accent-wood);
+  color: var(--surface-white);
+  padding: 16px 32px;
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.primaryBtn:hover {
+  background-color: var(--accent-forest);
+  transform: translateY(-2px);
+}
+
+.secondaryBtn {
+  color: var(--accent-forest);
+  padding: 16px 32px;
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-light);
+  transition: background-color 0.3s ease;
+}
+
+.secondaryBtn:hover {
+  background-color: var(--border-light);
+}
+
+@media (max-width: 768px) {
+  .overlay::before {
+    width: 100%;
+    background: linear-gradient(0deg, rgba(250, 249, 246, 0.95) 0%, rgba(250, 249, 246, 0.6) 100%);
+  }
+  .overlay {
+    align-items: flex-end;
+    padding-bottom: 100px;
+  }
+  .ctaGroup {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
