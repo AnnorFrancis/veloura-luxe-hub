@@ -1,111 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Manrope:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Tropical Modernism Palette */
-  --bg-primary: #FAF9F6; /* Warm Ivory/Cream */
-  --bg-secondary: #F2EFE9; /* Slightly darker cream for contrast */
-  --bg-tertiary: #E8E4DB;
-  
-  --text-primary: #2C3531; /* Very dark green/charcoal */
-  --text-secondary: #58645C; /* Muted forest tone */
-  --text-muted: #8B958E;
-  
-  --accent-wood: #8B4513; /* Rich Mahogany/Teak */
-  --accent-wood-light: #A0522D;
-  --accent-forest: #1F3F2F; /* Deep Forest Green */
-  --accent-terracotta: #C86C51; /* Subtle earth/clay tone */
-  
-  --surface-white: #FFFFFF;
-  --surface-glass: rgba(255, 255, 255, 0.7);
-  --border-light: rgba(44, 53, 49, 0.08);
+  /* Clean tropical modernism — cream, forest, mahogany */
+  --cream: #F7F3EA;         /* warm ivory */
+  --cream-deep: #EDE7D9;    /* elevated surfaces */
+  --cream-shadow: #E3DBC7;
 
-  /* Typography */
-  --font-heading: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Manrope', -apple-system, sans-serif;
+  --forest: #1E2D26;        /* deep forest green — primary text */
+  --forest-soft: #3F4E44;
+  --forest-mute: #6C7770;
 
-  /* Spacing & Radii */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  
-  --nav-height: 90px;
+  --mahogany: #8C4A2A;      /* warm mahogany accent (subtle, not gold) */
+  --terracotta: #B8613D;    /* CTA / small accents */
+  --sand: #C9B79B;          /* soft ochre for surfaces */
+
+  --line: rgba(30, 45, 38, 0.12);
+  --line-strong: rgba(30, 45, 38, 0.24);
+
+  --font-display: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --nav-height: 78px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
+html, body {
+  background-color: var(--cream);
+  color: var(--forest);
   font-family: var(--font-body);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-weight: 400;
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
-img {
-  max-width: 100%;
-  display: block;
-}
+html { font-size: 16px; }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+button { background: none; border: none; cursor: pointer; font-family: inherit; color: inherit; }
+input, textarea { font-family: inherit; color: inherit; }
 
-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-/* Base Headings */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--accent-forest);
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  color: var(--forest);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--text-muted);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-forest);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--forest-mute); border-radius: 4px; }
+::selection { background: var(--forest); color: var(--cream); }
 
-/* Utility Classes */
+/* Utilities */
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 clamp(24px, 5vw, 60px);
+  padding: 0 clamp(20px, 4vw, 56px);
+}
+.section-padding { padding: clamp(72px, 10vw, 130px) 0; }
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--mahogany);
 }
 
-.section-padding {
-  padding: clamp(80px, 12vw, 150px) 0;
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.4s var(--ease-out-expo);
+  border: 1px solid transparent;
 }
+.btn-primary { background: var(--forest); color: var(--cream); }
+.btn-primary:hover { background: var(--mahogany); }
+.btn-outline { border-color: var(--line-strong); color: var(--forest); }
+.btn-outline:hover { background: var(--forest); color: var(--cream); border-color: var(--forest); }
 
-.text-reveal-wrapper {
-  overflow: hidden;
-  display: inline-block;
-  vertical-align: top;
-}
+/* Standard cursor everywhere — no fake magnetic cursor */

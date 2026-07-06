@@ -1,0 +1,110 @@
+.hero {
+  padding: calc(var(--nav-height) + 60px) 0 60px;
+  background: var(--cream);
+}
+.grid {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 56px);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+
+.textCol {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-right: 20px;
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--forest);
+}
+.line { display: block; overflow: hidden; }
+.inner { display: inline-block; }
+
+.lede {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--forest-soft);
+  max-width: 480px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 16px 30px;
+  background: var(--forest);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  transition: background 0.35s, transform 0.35s;
+}
+.primary:hover { background: var(--mahogany); }
+.link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--forest);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--forest);
+  transition: color 0.3s, border-color 0.3s;
+}
+.link:hover { color: var(--mahogany); border-color: var(--mahogany); }
+
+.mediaCol {
+  position: relative;
+}
+.mediaWrap {
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--cream-deep);
+  border-radius: 4px;
+}
+.mediaWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mediaCaption {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  padding: 10px 14px;
+  background: rgba(247, 243, 234, 0.94);
+  backdrop-filter: blur(6px);
+}
+.mediaCaption span {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--mahogany);
+  margin-bottom: 4px;
+}
+.mediaCaption p {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--forest);
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .textCol { padding-right: 0; }
+  .mediaCol { order: -1; }
+}

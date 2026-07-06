@@ -1,50 +1,57 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
-const Footer = () => {
+export default function Footer() {
   return (
     <footer className={styles.footer}>
       <div className="container">
         <div className={styles.grid}>
-          <div className={styles.brand}>
-            <div className={styles.logo}>
-              KING OFORI PROPERTIES <span className={styles.logoDot}></span>
-            </div>
-            <p className={styles.description}>
-              Ghana's premier luxury real estate agency. Specializing in prime residential, commercial, and land properties across Accra, Kumasi, Tema, and Takoradi since 2009.
+          <div className={styles.brandCol}>
+            <div className={styles.logo}>META MEN</div>
+            <p className={styles.blurb}>
+              Considered menswear from Accra. Shirts, trousers, shoes and fragrance
+              — chosen by hand, delivered to your door.
             </p>
-          </div>
-          
-          <div className={styles.column}>
-            <h4>Services</h4>
-            <div className={styles.links}>
-              <a href="#">Residential Sales</a>
-              <a href="#">Commercial Properties</a>
-              <a href="#">Land & Plots</a>
-              <a href="#">Diaspora Management</a>
+            <div className={styles.contact}>
+              <a href="mailto:hello@metamen.co">hello@metamen.co</a>
+              <a href="tel:+233559990102">+233 55 999 0102</a>
+              <span>15 Ring Road · Osu, Accra</span>
             </div>
           </div>
-          
-          <div className={styles.column}>
-            <h4>Contact & Socials</h4>
-            <div className={styles.links}>
-              <a href="mailto:info@kingoforiproperties.com">info@kingoforiproperties.com</a>
-              <a href="tel:+233249914335">+233 24 991 4335</a>
-              <a href="#">15 Independence Avenue, East Legon</a>
-              <div style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
-                <a href="#">Facebook</a> | <a href="#">LinkedIn</a> | <a href="#">Instagram</a>
-              </div>
-            </div>
+
+          <div className={styles.col}>
+            <h4>Shop</h4>
+            <Link to="/collections?cat=shirts">Shirts & Polos</Link>
+            <Link to="/collections?cat=trousers">Trousers</Link>
+            <Link to="/collections?cat=shoes">Shoes & Sandals</Link>
+            <Link to="/collections?cat=fragrance">Fragrance</Link>
+            <Link to="/collections?cat=accessories">Accessories</Link>
+          </div>
+
+          <div className={styles.col}>
+            <h4>Support</h4>
+            <a href="#">Size guide</a>
+            <a href="#">Delivery & returns</a>
+            <a href="#">Care instructions</a>
+            <Link to="/contact">Contact us</Link>
+          </div>
+
+          <div className={styles.col}>
+            <h4>Follow</h4>
+            <a href="#">Instagram</a>
+            <a href="#">TikTok</a>
+            <a href="#">WhatsApp</a>
           </div>
         </div>
-        
-        <div className={styles.bottom}>
-          <div>&copy; {new Date().getFullYear()} King Ofori Real Estate. All rights reserved.</div>
-          <div>Designed to Convert.</div>
+
+        <div className={styles.bar}>
+          <span>© {new Date().getFullYear()} META Men · Accra, Ghana</span>
+          <div className={styles.pay}>
+            <span>We accept</span>
+            <em>Visa</em><em>Mastercard</em><em>MTN MoMo</em><em>Vodafone Cash</em>
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

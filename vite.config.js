@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// META Men — leave base flexible; set BASE_URL at build time when deploying to gh-pages
 export default defineConfig({
   plugins: [react()],
-  base: '/king-ofori-real-estate/'
+  base: '/king-ofori-real-estate/',
 })

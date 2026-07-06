@@ -1,0 +1,108 @@
+.hero {
+  padding: calc(var(--nav-height) + 60px) 0 40px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+.title small {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--forest-mute);
+  letter-spacing: 0;
+}
+.lede {
+  font-size: 15px;
+  color: var(--forest-soft);
+  max-width: 520px;
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+.controls {
+  position: sticky;
+  top: var(--nav-height);
+  z-index: 10;
+  background: rgba(247, 243, 234, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.cats {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.chip {
+  padding: 9px 16px;
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--forest-soft);
+  transition: all 0.3s;
+  border-radius: 2px;
+}
+.chip:hover { border-color: var(--forest); color: var(--forest); }
+.chipActive {
+  background: var(--forest);
+  color: var(--cream);
+  border-color: var(--forest);
+}
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sortLabel {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--forest-mute);
+  font-weight: 600;
+}
+.select {
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  color: var(--forest);
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 9px 30px 9px 12px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233F4E44' stroke-width='1.5'><path d='m6 9 6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+  border-radius: 2px;
+}
+
+.gridSection { padding: 48px 0 96px; background: var(--cream); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 20px;
+}
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--forest-mute);
+}
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 800px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 32px 12px; } }

@@ -1,81 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { NavLink, useLocation, Link } from 'react-router-dom';
+import { useCart } from '../hooks/useCart';
 import styles from './Navigation.module.css';
 
-const Navigation = () => {
+const LINKS = [
+  { to: '/', label: 'Home' },
+  { to: '/collections', label: 'Shop' },
+  { to: '/contact', label: 'Contact' },
+];
+
+export default function Navigation({ onOpenCart }) {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { count } = useCart();
+  const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const h = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', h, { passive: true });
+    h();
+    return () => window.removeEventListener('scroll', h);
   }, []);
 
-  // Lock body scroll when mobile menu is open
+  useEffect(() => { setOpen(false); }, [location]);
+
   useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [mobileMenuOpen]);
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
 
   return (
     <>
-      <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
-        <div className={styles.logo}>
-          <span className={styles.logoText}>KING OFORI</span>
-          <span className={styles.logoDot}></span>
-        </div>
-        
+      <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
+        <Link to="/" className={styles.logo}>META MEN</Link>
+
         <div className={styles.links}>
-          <a href="#properties" className={styles.link}>Properties</a>
-          <a href="#diaspora" className={styles.link}>Diaspora Portal</a>
-          <a href="#about" className={styles.link}>About Us</a>
+          {LINKS.map(l => (
+            <NavLink key={l.to} to={l.to} end={l.to === '/'} className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}>
+              {l.label}
+            </NavLink>
+          ))}
         </div>
 
-        <a href="#contact" className={styles.cta} style={{ display: 'inline-block', textDecoration: 'none', textAlign: 'center' }}>Book Consultation</a>
-
-        <button 
-          className={styles.hamburger} 
-          onClick={() => setMobileMenuOpen(true)}
-        >
-          <Menu size={28} color="var(--accent-forest)" />
-        </button>
+        <div className={styles.actions}>
+          <button className={styles.cartBtn} onClick={onOpenCart} aria-label="Cart">
+            <span>Bag</span>
+            {count > 0 && <span className={styles.badge}>{count}</span>}
+          </button>
+          <button className={styles.burger} onClick={() => setOpen(true)} aria-label="Menu">
+            <span></span><span></span>
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div 
+        {open && (
+          <motion.div
             className={styles.mobileMenu}
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'tween', duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+            initial={{ y: '-100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
           >
-            <button 
-              className={styles.mobileClose} 
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <X size={32} color="var(--surface-white)" />
-            </button>
-            
-            <div className={styles.mobileLinks}>
-              <a href="#properties" onClick={() => setMobileMenuOpen(false)}>Properties</a>
-              <a href="#diaspora" onClick={() => setMobileMenuOpen(false)}>Diaspora Portal</a>
-              <a href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
+            <div className={styles.mobileTop}>
+              <span className={styles.logo}>META MEN</span>
+              <button className={styles.close} onClick={() => setOpen(false)} aria-label="Close">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
             </div>
-            
-            <a href="#contact" className={styles.mobileCta} onClick={() => setMobileMenuOpen(false)} style={{ display: 'inline-block', textDecoration: 'none', textAlign: 'center' }}>Book Consultation</a>
+            <div className={styles.mobileLinks}>
+              {LINKS.map((l, i) => (
+                <motion.div key={l.to}
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.12 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <NavLink to={l.to} className={styles.mobileLink}>{l.label}</NavLink>
+                </motion.div>
+              ))}
+            </div>
+            <div className={styles.mobileFoot}>
+              <a href="mailto:hello@metamen.co">hello@metamen.co</a>
+              <a href="tel:+233559990102">+233 55 999 0102</a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
-};
-
-export default Navigation;
+}
