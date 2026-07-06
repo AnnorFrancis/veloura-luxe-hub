@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // META Men — leave base flexible; set BASE_URL at build time when deploying to gh-pages
 export default defineConfig({
   plugins: [react()],
-  base: '/king-ofori-real-estate/',
+  base: '/meta-men/',
 })
