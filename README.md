@@ -3,6 +3,9 @@
 A client-approval sample for **Veloura Luxe Hub**, an intimates and everyday
 essentials boutique in Osu, Accra.
 
+Live: <https://annorfrancis.github.io/veloura-luxe-hub/>
+Management system: <https://annorfrancis.github.io/veloura-luxe-hub/#/admin>
+
 ## Run it
 
 ```bash
@@ -12,6 +15,21 @@ npm run dev
 
 Open **http://localhost:5173/veloura-luxe-hub/**. The `base` path is set in
 `vite.config.js` for GitHub Pages, so the bare root will not serve the app.
+
+## Deploy
+
+The site is a project page, published from the `gh-pages` branch. `dist` is
+its own small repo pointed at that branch, so a redeploy is a build and a
+push:
+
+```bash
+npm run build && cd dist && git add -A && git commit -m Deploy && git push -f origin gh-pages
+```
+
+If git asks for the wrong GitHub account, prefix the push with
+`git -c credential.helper="!gh auth git-credential"`. The machine has cached
+HTTPS credentials for a second account, and that flag makes the push use the
+account `gh` is signed in as instead.
 
 ## Pages
 
