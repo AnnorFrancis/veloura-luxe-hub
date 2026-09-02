@@ -20,7 +20,7 @@ const DELIVERY_OPTIONS = [
 
 /* ── Cart ───────────────────────────────────────────────── */
 export function Cart() {
-  const { items, subtotal, updateQty, remove } = useCart();
+  const { items, subtotal, updateQty, remove, clear } = useCart();
   const [ship, setShip] = useState('accra');
   const [code, setCode] = useState('');
   const [applied, setApplied] = useState(null);
@@ -205,7 +205,12 @@ export function Cart() {
                   <div className={styles.grand}><dt>Total</dt><dd>{currency} {total.toLocaleString()}</dd></div>
                 </dl>
 
-                <button className={`btn btn-primary ${styles.checkout}`} onClick={() => setPlaced(true)}>
+                {/* Empty the cart as the order is placed, otherwise the badge
+                    keeps counting pieces that have already been bought. */}
+                <button
+                  className={`btn btn-primary ${styles.checkout}`}
+                  onClick={() => { setPlaced(true); clear(); }}
+                >
                   Checkout
                 </button>
 
