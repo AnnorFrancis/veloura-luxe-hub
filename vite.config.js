@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// META Men — leave base flexible; set BASE_URL at build time when deploying to gh-pages
+// Served from a project page at annorfrancis.github.io/veloura-luxe-hub/,
+// so every asset URL needs that prefix. import.meta.env.BASE_URL carries it
+// into the code that builds image paths.
 export default defineConfig({
   plugins: [react()],
-  base: '/meta-men/',
+  base: '/veloura-luxe-hub/',
 })

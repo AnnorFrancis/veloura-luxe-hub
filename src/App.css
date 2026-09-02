@@ -1,5 +1,22 @@
-/* App-level shell only — everything else is CSS modules */
-main {
-  position: relative;
-  z-index: 1;
+/* App shell only, everything else lives in CSS modules */
+main { position: relative; z-index: 1; }
+.page { position: relative; }
+
+/* WebGL aurora fades in over its CSS-gradient stand-in */
+.aurora-live {
+  position: absolute;
+  inset: 0;
+  animation: auroraIn 1.2s ease forwards;
 }
+@keyframes auroraIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Incoming page fades itself in, no exit animation is ever waited on */
+.route-fade { animation: routeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes routeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .route-fade { animation: none; } }
+
+/* Holds the fold while a lazy route arrives, so the footer never jumps up */
+.route-hold { min-height: 70svh; }

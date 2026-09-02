@@ -1,113 +1,130 @@
-import { useMemo, useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import ProductModal from '../components/ProductModal';
-import { CATEGORIES, PRODUCTS } from '../data/products';
+import PageHero from '../components/PageHero';
+import { CATEGORIES, PRODUCTS, byCategory, countOf } from '../data/products';
 import { cartApi } from '../hooks/useCart';
+import { useReveal } from '../hooks/useMotionKit';
 import styles from './Collections.module.css';
 
 const SORTS = [
   { id: 'featured', label: 'Featured' },
-  { id: 'price-asc', label: 'Price · Low to High' },
-  { id: 'price-desc', label: 'Price · High to Low' },
-  { id: 'newest', label: 'Newest' },
+  { id: 'low', label: 'Price ↑' },
+  { id: 'high', label: 'Price ↓' },
+  { id: 'az', label: 'A to Z' },
 ];
+
+const PAGE = 24;
 
 export default function Collections() {
   const [params, setParams] = useSearchParams();
   const cat = params.get('cat') || 'all';
   const [sort, setSort] = useState('featured');
-  const [quick, setQuick] = useState(null);
+  const [shown, setShown] = useState(PAGE);
+  const ref = useReveal();
 
-  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+  // Reset paging when the filter changes, adjusted during render rather
+  // than in an effect, so the grid never paints a stale page first.
+  const viewKey = `${cat}|${sort}`;
+  const [prevViewKey, setPrevViewKey] = useState(viewKey);
+  if (viewKey !== prevViewKey) {
+    setPrevViewKey(viewKey);
+    setShown(PAGE);
+  }
 
-  const filtered = useMemo(() => {
-    let list = cat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === cat);
-    switch (sort) {
-      case 'price-asc': list = [...list].sort((a, b) => a.price - b.price); break;
-      case 'price-desc': list = [...list].sort((a, b) => b.price - a.price); break;
-      case 'newest': list = [...list].filter(p => p.badge === 'New').concat(list.filter(p => p.badge !== 'New')); break;
-      default: break;
-    }
-    return list;
+  const active = CATEGORIES.find((c) => c.id === cat);
+
+  const list = useMemo(() => {
+    const base = [...byCategory(cat)];
+    if (sort === 'low') base.sort((a, b) => a.price - b.price);
+    if (sort === 'high') base.sort((a, b) => b.price - a.price);
+    if (sort === 'az') base.sort((a, b) => a.name.localeCompare(b.name));
+    return base;
   }, [cat, sort]);
 
   const setCat = (id) => {
-    if (id === 'all') setParams({}, { replace: true });
-    else setParams({ cat: id }, { replace: true });
+    if (id === 'all') setParams({});
+    else setParams({ cat: id });
   };
 
   return (
-    <div className="page">
-      <section className={styles.hero}>
-        <div className="container">
-          <span className="eyebrow">Shop</span>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className={styles.title}
-          >
-            {CATEGORIES.find(c => c.id === cat)?.label || 'All'}
-            <small>{filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'}</small>
-          </motion.h1>
-          <p className={styles.lede}>
-            Free delivery in Accra above GH₵ 500. 7-day free exchange on all shirts,
-            trousers and shoes. Real customer support on WhatsApp.
-          </p>
-        </div>
-      </section>
+    <div className={styles.page} data-tone={active?.tone || 'rose'}>
+      <PageHero
+        eyebrow={active ? active.label : 'The full floor'}
+        title={active ? active.label : 'Every'}
+        accent={active ? 'edit' : 'piece.'}
+        lede={active ? active.blurb : 'Nine departments, one rail. Filter down to exactly what you came for.'}
+        tone={active?.tone === 'sea' || active?.tone === 'sky' ? 'sea' : active?.tone === 'mint' ? 'mint' : active?.tone === 'sun' || active?.tone === 'gold' ? 'sun' : 'rose'}
+        media={active ? active.id : 'shop'}
+        crumbs={[{ label: 'Shop', to: '/shop' }, ...(active ? [{ label: active.label }] : [])]}
+      />
 
-      <section className={styles.controls}>
-        <div className="container">
-          <div className={styles.bar}>
-            <div className={styles.cats}>
-              {CATEGORIES.map(c => (
+      {/* ── Filter bar ────────────────────────────── */}
+      <div className={styles.bar}>
+        <div className={`container ${styles.barInner}`}>
+          <div className={styles.chips}>
+            <button
+              className={`${styles.chip} ${cat === 'all' ? styles.chipOn : ''}`}
+              onClick={() => setCat('all')}
+            >
+              All <i>{PRODUCTS.length}</i>
+            </button>
+            {CATEGORIES.map((c) => (
+              <button
+                key={c.id}
+                data-tone={c.tone}
+                className={`${styles.chip} ${cat === c.id ? styles.chipOn : ''}`}
+                onClick={() => setCat(c.id)}
+              >
+                {c.short} <i>{countOf(c.id)}</i>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.sort}>
+            <div className={styles.sortBtns} role="group" aria-label="Sort products">
+              {SORTS.map((s) => (
                 <button
-                  key={c.id}
-                  onClick={() => setCat(c.id)}
-                  className={`${styles.chip} ${cat === c.id ? styles.chipActive : ''}`}
-                >{c.label}</button>
+                  key={s.id}
+                  className={`${styles.sortBtn} ${sort === s.id ? styles.sortOn : ''}`}
+                  onClick={() => setSort(s.id)}
+                >
+                  {s.label}
+                </button>
               ))}
-            </div>
-            <div className={styles.sort}>
-              <span className={styles.sortLabel}>Sort</span>
-              <select value={sort} onChange={(e) => setSort(e.target.value)} className={styles.select}>
-                {SORTS.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className={styles.gridSection}>
+      {/* ── Grid ──────────────────────────────────── */}
+      <section className={styles.body} ref={ref}>
         <div className="container">
-          <AnimatePresence mode="popLayout">
-            <motion.div key={`${cat}-${sort}`} className={styles.grid}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {filtered.map((p, i) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  index={i}
-                  onQuickView={setQuick}
-                  onAdd={(prod, opts) => cartApi.add(prod, opts)}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <p className={styles.count}>
+            Showing <b>{Math.min(shown, list.length)}</b> of <b>{list.length}</b> pieces
+          </p>
 
-          {filtered.length === 0 && (
-            <div className={styles.empty}>
-              <p>Nothing in this category yet — check back soon.</p>
+          <div className={styles.grid} key={`${cat}-${sort}`}>
+            {list.slice(0, shown).map((p, i) => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                index={i}
+                onAdd={(x, o) => cartApi.add(x, o)}
+              />
+            ))}
+          </div>
+
+          {shown < list.length && (
+            <div className={styles.more}>
+              <button className="btn btn-ghost" onClick={() => setShown((s) => s + PAGE)}>
+                Load {Math.min(PAGE, list.length - shown)} more
+              </button>
             </div>
           )}
         </div>
       </section>
 
-      <ProductModal product={quick} onClose={() => setQuick(null)} onAdd={(p, o) => cartApi.add(p, o)} />
     </div>
   );
 }

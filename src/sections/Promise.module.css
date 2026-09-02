@@ -1,42 +1,86 @@
 .section {
-  padding: 48px 0;
-  background: var(--forest);
-  color: var(--cream);
+  padding: clamp(52px, 6vw, 84px) 0;
+  background: var(--porcelain);
+  border-top: 1px solid var(--line);
 }
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 22px);
 }
+
 .item {
+  position: relative;
   display: flex;
-  gap: 14px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 9px;
+  padding: clamp(22px, 2.4vw, 30px);
+  border-radius: var(--radius);
+  background: var(--tone-wash);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.6s var(--ease-out-expo), box-shadow 0.6s var(--ease-out-expo);
 }
+.item:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+
 .num {
+  position: absolute;
+  top: 16px;
+  right: 18px;
   font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  color: var(--sand);
-  padding-top: 4px;
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--tone);
+  opacity: 0.28;
+  letter-spacing: -0.04em;
+  pointer-events: none;
 }
-.item h4 {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 1.1rem;
-  color: var(--cream);
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--porcelain);
+  color: var(--tone-deep);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 6px;
-  letter-spacing: 0;
 }
+.icon svg { width: 22px; height: 22px; }
+
+.item h3 {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
 .item p {
   font-size: 13px;
-  color: rgba(247, 243, 234, 0.72);
-  line-height: 1.55;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 32ch;
 }
+
+.sheen {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(130deg, transparent 40%, rgba(255, 255, 255, 0.85) 52%, transparent 64%);
+  transform: translateX(-120%);
+  transition: transform 0.9s var(--ease-out-expo);
+}
+.item:hover .sheen { transform: translateX(120%); }
+
 @media (max-width: 900px) {
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 560px) {
+@media (max-width: 520px) {
   .grid { grid-template-columns: 1fr; }
+  .num { font-size: 2.1rem; }
 }

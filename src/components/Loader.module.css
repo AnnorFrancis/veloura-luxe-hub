@@ -1,36 +1,136 @@
 .loader {
   position: fixed;
   inset: 0;
-  background: var(--cream);
-  z-index: 10001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--porcelain);
 }
+
+.panel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50.5%;
+  z-index: 1;
+  background: var(--grad-warm);
+}
+.panelTop { top: 0; }
+.panelBottom { bottom: 0; }
+
+/* ── Exit: pure CSS, so the unmount never waits on rAF ──────── */
+.leaving { pointer-events: none; }
+.leaving .panelTop {
+  animation: curtainUp 0.85s var(--ease-in-out-quart) forwards;
+}
+.leaving .panelBottom {
+  animation: curtainDown 0.85s var(--ease-in-out-quart) forwards;
+}
+.leaving .center {
+  animation: centerOut 0.4s ease forwards;
+}
+.leaving .aurora {
+  animation: centerOut 0.5s ease forwards;
+}
+
+@keyframes curtainUp   { to { transform: translateY(-101%); } }
+@keyframes curtainDown { to { transform: translateY(101%); } }
+@keyframes centerOut   { to { opacity: 0; transform: scale(0.96); } }
+
+.aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+.b1 {
+  width: 46vw; height: 46vw;
+  left: -8vw; top: -6vw;
+  background: var(--rose-soft);
+  animation: drift1 9s var(--ease-in-out-quart) infinite alternate;
+}
+.b2 {
+  width: 40vw; height: 40vw;
+  right: -6vw; top: 12vh;
+  background: var(--sea-soft);
+  animation: drift2 11s var(--ease-in-out-quart) infinite alternate;
+}
+.b3 {
+  width: 38vw; height: 38vw;
+  left: 26vw; bottom: -12vw;
+  background: var(--peach-soft);
+  animation: drift3 10s var(--ease-in-out-quart) infinite alternate;
+}
+@keyframes drift1 { to { transform: translate3d(9vw, 6vh, 0) scale(1.16); } }
+@keyframes drift2 { to { transform: translate3d(-11vw, 8vh, 0) scale(1.1); } }
+@keyframes drift3 { to { transform: translate3d(7vw, -9vh, 0) scale(1.2); } }
+
 .center {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  width: min(280px, 70vw);
+  gap: 22px;
+  padding: 0 24px;
+  width: min(680px, 92vw);
 }
-.wordmark {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  color: var(--forest);
+
+.sprigTop {
+  width: 74px;
+  opacity: 0;
+  animation: sprigIn 1.1s var(--ease-out-expo) 0.15s forwards;
 }
-.progressWrap {
+@keyframes sprigIn {
+  from { opacity: 0; transform: translateY(10px) rotate(-8deg); }
+  to   { opacity: 0.9; transform: none; }
+}
+
+/* Ghost + fill pair gives a left-to-right ink-in reveal */
+.markWrap { position: relative; display: grid; place-items: center; }
+.markArt { height: clamp(110px, 22vw, 190px); }
+.markGhost { opacity: 0.2; filter: grayscale(1); }
+.markFill {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  will-change: clip-path;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  height: 1px;
-  background: var(--line);
+  gap: 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.tagline { display: inline-flex; align-items: center; gap: 9px; }
+.star { color: var(--rose); flex: none; }
+.count { font-variant-numeric: tabular-nums; color: var(--rose-deep); }
+
+.track {
+  width: 100%;
+  height: 2px;
+  background: rgba(42, 32, 40, 0.1);
+  border-radius: 2px;
   overflow: hidden;
 }
-.progressBar {
+.fill {
+  display: block;
   height: 100%;
-  width: 100%;
-  background: var(--forest);
+  background: var(--grad-brand);
   transform-origin: left center;
-  transition: transform 0.1s linear;
+  transition: transform 0.16s linear;
+}
+
+@media (max-width: 640px) {
+  .meta { font-size: 9px; letter-spacing: 0.18em; }
+  .sprigTop { width: 56px; }
 }

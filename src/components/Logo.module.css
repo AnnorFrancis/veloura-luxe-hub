@@ -1,0 +1,24 @@
+/* The wrapper only exists to hold the WebP source, so it steps out of the
+   layout and lets the image sit directly in whatever box the caller built. */
+.pic { display: contents; }
+
+/* Defaults sit inside :where() so they carry no specificity at all. Any
+   class a call site puts on the logo wins without a fight, which keeps the
+   artwork from ever being stretched by a rule ordering accident. */
+:where(.art) {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  user-select: none;
+}
+
+:where(.lockup) { height: 3.05em; }
+:where(.full) { height: 4.4em; }
+:where(.mark) { height: 4.4em; }
+
+.sprig {
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}

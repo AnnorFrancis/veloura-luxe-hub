@@ -1,9 +1,10 @@
-/* Very subtle warm grain — no vignette, cream background is clean */
+/* Very fine warm grain over the whole page, adds tooth to flat colour */
 .noise {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 9997;
   pointer-events: none;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
+  opacity: 0.028;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.86' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }

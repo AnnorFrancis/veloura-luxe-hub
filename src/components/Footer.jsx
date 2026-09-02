@@ -1,54 +1,99 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Logo, { Sprig, Star } from './Logo';
+import { FOOTER_NAV, STORE } from '../data/site';
 import styles from './Footer.module.css';
 
+const B = import.meta.env.BASE_URL || '/';
+
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSent(true);
+    setEmail('');
+    setTimeout(() => setSent(false), 3200);
+  };
+
   return (
     <footer className={styles.footer}>
+      {/* ── Newsletter ──────────────────────────────── */}
+      <div className={styles.band}>
+        <span
+          className={styles.bandTexture}
+          style={{ backgroundImage: `url(${B}backdrop/soft.webp)` }}
+          aria-hidden="true"
+        />
+        <span className={`blob ${styles.bandBlobA}`} aria-hidden="true" />
+        <span className={`blob ${styles.bandBlobB}`} aria-hidden="true" />
+        <div className={`container ${styles.bandInner}`}>
+          <div className={styles.bandCopy}>
+            <span className="eyebrow">Join the list</span>
+            <h2 className="display-md">
+              First look at new arrivals,<br />
+              <em className="serif-italic tinted">and the restocks.</em>
+            </h2>
+          </div>
+
+          <form className={styles.form} onSubmit={submit}>
+            <label className="sr-only" htmlFor="nl">Email address</label>
+            <input
+              id="nl"
+              type="email"
+              required
+              placeholder="you@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <button type="submit" className={styles.formBtn}>
+              {sent ? 'Welcome' : 'Subscribe'}
+            </button>
+          </form>
+        </div>
+        <Sprig className={styles.bandSprig} />
+      </div>
+
+      {/* ── Main ────────────────────────────────────── */}
       <div className="container">
         <div className={styles.grid}>
           <div className={styles.brandCol}>
-            <div className={styles.logo}>META MEN</div>
+            <Logo variant="full" className={styles.footLogo} />
             <p className={styles.blurb}>
-              Considered menswear from Accra. Shirts, trousers, shoes and fragrance
-              — chosen by hand, delivered to your door.
+              Intimates and everyday essentials, chosen by hand in Accra and
+              delivered discreetly across Ghana.
             </p>
             <div className={styles.contact}>
-              <a href="mailto:hello@metamen.co">hello@metamen.co</a>
-              <a href="tel:+233559990102">+233 55 999 0102</a>
-              <span>15 Ring Road · Osu, Accra</span>
+              <a href={`mailto:${STORE.email}`}>{STORE.email}</a>
+              <a href={STORE.phoneHref}>{STORE.phone}</a>
+              <span><Star /> {STORE.street}, {STORE.area}</span>
+            </div>
+            <div className={styles.social}>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram">Instagram</a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="TikTok">TikTok</a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="WhatsApp">WhatsApp</a>
             </div>
           </div>
 
-          <div className={styles.col}>
-            <h4>Shop</h4>
-            <Link to="/collections?cat=shirts">Shirts & Polos</Link>
-            <Link to="/collections?cat=trousers">Trousers</Link>
-            <Link to="/collections?cat=shoes">Shoes & Sandals</Link>
-            <Link to="/collections?cat=fragrance">Fragrance</Link>
-            <Link to="/collections?cat=accessories">Accessories</Link>
-          </div>
-
-          <div className={styles.col}>
-            <h4>Support</h4>
-            <a href="#">Size guide</a>
-            <a href="#">Delivery & returns</a>
-            <a href="#">Care instructions</a>
-            <Link to="/contact">Contact us</Link>
-          </div>
-
-          <div className={styles.col}>
-            <h4>Follow</h4>
-            <a href="#">Instagram</a>
-            <a href="#">TikTok</a>
-            <a href="#">WhatsApp</a>
-          </div>
+          {FOOTER_NAV.map((col) => (
+            <nav className={styles.col} key={col.title} aria-label={col.title}>
+              <h3>{col.title}</h3>
+              {col.links.map((l) => (
+                <Link key={l.to + l.label} to={l.to}>{l.label}</Link>
+              ))}
+            </nav>
+          ))}
         </div>
 
+        <div className={styles.watermark} aria-hidden="true">VELOURA</div>
+
         <div className={styles.bar}>
-          <span>© {new Date().getFullYear()} META Men · Accra, Ghana</span>
+          <span>&copy; {new Date().getFullYear()} {STORE.name}, {STORE.area}</span>
           <div className={styles.pay}>
             <span>We accept</span>
-            <em>Visa</em><em>Mastercard</em><em>MTN MoMo</em><em>Vodafone Cash</em>
+            <em>MTN MoMo</em><em>Telecel Cash</em><em>Visa</em><em>Mastercard</em>
           </div>
         </div>
       </div>

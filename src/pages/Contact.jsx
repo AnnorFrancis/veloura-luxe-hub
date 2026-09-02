@@ -1,122 +1,121 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import PageHero from '../components/PageHero';
+import { Star } from '../components/Logo';
+import { EDITORIAL } from '../data/products';
+import { STORE } from '../data/site';
+import { useReveal } from '../hooks/useMotionKit';
 import styles from './Contact.module.css';
 
-const REASONS = [
-  { id: 'order', label: 'Order or delivery' },
-  { id: 'sizing', label: 'Sizing help' },
-  { id: 'appointment', label: 'Book an appointment' },
-  { id: 'wholesale', label: 'Wholesale' },
-  { id: 'other', label: 'Something else' },
-];
+const TOPICS = ['Size & fit', 'An order', 'Wholesale', 'Something else'];
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', reason: 'order', message: '' });
-  const [status, setStatus] = useState('idle');
-
-  useEffect(() => { window.scrollTo({ top: 0 }); }, []);
+  const [topic, setTopic] = useState(TOPICS[0]);
+  const [sent, setSent] = useState(false);
+  const ref = useReveal();
 
   const submit = (e) => {
     e.preventDefault();
-    setStatus('sent');
-    setTimeout(() => {
-      setStatus('idle');
-      setForm({ name: '', email: '', phone: '', reason: 'order', message: '' });
-    }, 3200);
+    setSent(true);
+    e.target.reset();
+    setTimeout(() => setSent(false), 4000);
   };
 
-  const update = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
-
   return (
-    <div className="page">
-      <section className={styles.hero}>
-        <div className="container">
-          <span className="eyebrow">Contact</span>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className={styles.title}
-          >
-            We reply fast.
-          </motion.h1>
-          <p className={styles.lede}>
-            Call, WhatsApp, or fill out the form. A real person on our team will get
-            back to you within a few hours during business days.
-          </p>
-        </div>
-      </section>
+    <div className={styles.page} ref={ref}>
+      <PageHero
+        eyebrow="Say hello"
+        title="Come get"
+        accent="measured."
+        lede="Walk into the Osu shop, message us on WhatsApp, or send a note below. We answer within the hour on working days."
+        tone="mint"
+        media="contact"
+        crumbs={[{ label: 'Contact' }]}
+      />
 
-      <section className={styles.main}>
+      <section className={styles.body}>
         <div className="container">
           <div className={styles.grid}>
-            <motion.form
-              onSubmit={submit}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className={styles.form}
-            >
-              <div className={styles.grid2}>
-                <label className={styles.field}>
-                  <span>Name</span>
-                  <input type="text" required value={form.name} onChange={update('name')} placeholder="Your name" />
-                </label>
-                <label className={styles.field}>
-                  <span>Email</span>
-                  <input type="email" required value={form.email} onChange={update('email')} placeholder="you@somewhere.com" />
-                </label>
-              </div>
-              <label className={styles.field}>
-                <span>Phone (optional)</span>
-                <input type="tel" value={form.phone} onChange={update('phone')} placeholder="+233 55 ..." />
-              </label>
+            {/* ── Form ───────────────────────────── */}
+            <div className={`${styles.formCard} reveal`}>
+              <form onSubmit={submit}>
+                <div className={styles.topics}>
+                  <span className={styles.label}>I’m asking about</span>
+                  <div className={styles.topicRow}>
+                    {TOPICS.map((t) => (
+                      <button
+                        type="button"
+                        key={t}
+                        className={`${styles.topic} ${topic === t ? styles.topicOn : ''}`}
+                        onClick={() => setTopic(t)}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-              <div className={styles.reasons}>
-                <span className={styles.reasonLabel}>How can we help?</span>
-                <div className={styles.chips}>
-                  {REASONS.map(r => (
-                    <button key={r.id} type="button"
-                      onClick={() => setForm(f => ({ ...f, reason: r.id }))}
-                      className={`${styles.chip} ${form.reason === r.id ? styles.chipOn : ''}`}
-                    >{r.label}</button>
+                <div className={styles.row}>
+                  <label className={styles.field}>
+                    <span className={styles.label}>Name</span>
+                    <input type="text" name="name" required placeholder="Ama Mensah" />
+                  </label>
+                  <label className={styles.field}>
+                    <span className={styles.label}>Phone</span>
+                    <input type="tel" name="phone" required placeholder="+233 20 000 0000" />
+                  </label>
+                </div>
+
+                <label className={styles.field}>
+                  <span className={styles.label}>Email</span>
+                  <input type="email" name="email" required placeholder="you@email.com" />
+                </label>
+
+                <label className={styles.field}>
+                  <span className={styles.label}>Message</span>
+                  <textarea name="message" rows="5" required placeholder="Tell us what you are looking for…" />
+                </label>
+
+                <button type="submit" className={`btn btn-primary ${styles.submit}`}>
+                  {sent ? 'Message sent ✓' : 'Send message'}
+                </button>
+                {sent && (
+                  <p className={styles.sentNote}>
+                    <Star /> Thank you. This is a design sample, so nothing was actually sent.
+                  </p>
+                )}
+              </form>
+            </div>
+
+            {/* ── Side ───────────────────────────── */}
+            <aside className={styles.side}>
+              <figure className={`${styles.shot} reveal`}>
+                <img src={EDITORIAL.fitting} alt="Fitting room at the Osu shop" loading="lazy" />
+                <figcaption>The fitting room · Osu</figcaption>
+              </figure>
+
+              <div className={`${styles.card} reveal`} data-tone="rose">
+                <h3>Visit the shop</h3>
+                <p>{STORE.street}<br />{STORE.area}</p>
+                <a href="https://maps.google.com/?q=Oxford+Street+Osu+Accra" target="_blank" rel="noreferrer" className="link-arrow">
+                  Open in Maps <span aria-hidden="true">→</span>
+                </a>
+              </div>
+
+              <div className={`${styles.card} reveal`} data-tone="mint">
+                <h3>Opening hours</h3>
+                <dl className={styles.hours}>
+                  {STORE.hours.map(([d, h]) => (
+                    <div key={d}><dt>{d}</dt><dd>{h}</dd></div>
                   ))}
-                </div>
+                </dl>
               </div>
 
-              <label className={styles.field}>
-                <span>Message</span>
-                <textarea rows="6" required value={form.message} onChange={update('message')}
-                  placeholder="Tell us what you need." />
-              </label>
-
-              <button type="submit" className={styles.submit}>
-                {status === 'sent' ? 'Thanks — we\'ll get back to you' : 'Send message'}
-              </button>
-            </motion.form>
-
-            <aside className={styles.aside}>
-              <div className={styles.block}>
-                <span className="eyebrow">Straight to us</span>
-                <a href="mailto:hello@metamen.co" className={styles.big}>hello@metamen.co</a>
-                <a href="tel:+233559990102" className={styles.medium}>+233 55 999 0102</a>
-                <a href="#" className={styles.medium}>Chat on WhatsApp</a>
-              </div>
-
-              <div className={styles.block}>
-                <span className="eyebrow">Visit</span>
-                <div className={styles.loc}>
-                  <h4>Osu, Accra</h4>
-                  <p>15 Ring Road<br/>Opposite Frankie's</p>
-                  <span>Mon–Sat · 9am–7pm</span>
-                </div>
-              </div>
-
-              <div className={styles.block}>
-                <span className="eyebrow">Follow</span>
-                <div className={styles.social}>
-                  <a href="#">Instagram — <em>@metamen.co</em></a>
-                  <a href="#">TikTok — <em>@metamen.co</em></a>
+              <div className={`${styles.card} reveal`} data-tone="sea">
+                <h3>Reach us directly</h3>
+                <div className={styles.links}>
+                  <a href={STORE.phoneHref}>{STORE.phone}</a>
+                  <a href={`mailto:${STORE.email}`}>{STORE.email}</a>
+                  <a href="#" onClick={(e) => e.preventDefault()}>WhatsApp us</a>
                 </div>
               </div>
             </aside>

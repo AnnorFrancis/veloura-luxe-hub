@@ -1,5 +1,5 @@
-// Lightweight cart store — localStorage + custom event, no external dep
-const CART_KEY = 'meta-men-cart';
+// Lightweight cart store, localStorage + custom event, no external dep
+const CART_KEY = 'veloura-luxe-cart';
 
 const readCart = () => {
   try {
@@ -9,7 +9,9 @@ const readCart = () => {
 };
 
 const writeCart = (items) => {
-  try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch {}
+  // Storage can throw in private mode or when the quota is full; the cart
+  // still works for the session, so there is nothing useful to do here.
+  try { localStorage.setItem(CART_KEY, JSON.stringify(items)); } catch { /* ignore */ }
   window.dispatchEvent(new CustomEvent('cart:change', { detail: items }));
 };
 
@@ -33,7 +35,7 @@ export const cartApi = {
   subtotal: () => readCart().reduce((s, i) => s + i.qty * i.price, 0),
 };
 
-// React hook — subscribes to cart changes
+// React hook, subscribes to cart changes
 import { useEffect, useState } from 'react';
 export function useCart() {
   const [items, setItems] = useState(readCart);

@@ -1,32 +1,80 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTilt } from '../hooks/useMotionKit';
+import { useWishlist } from '../hooks/useWishlist';
 import styles from './ProductCard.module.css';
 
-export default function ProductCard({ product, onQuickView, onAdd, index = 0 }) {
+const TONE = {
+  panties: 'rose', underwear: 'sky', bikinis: 'sea', shapers: 'peach',
+  nightwear: 'lilac', socks: 'mint', napkins: 'blush', towels: 'gold', raincoat: 'sun',
+};
+
+export default function ProductCard({ product, onAdd, index = 0, compact = false }) {
+  const tilt = useTilt({ max: 7, scale: 1.02 });
+  const wishlist = useWishlist();
+  const [added, setAdded] = useState(false);
+  const saved = wishlist.has(product.id);
+
+  const add = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onAdd?.(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1300);
+  };
+
+  const save = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    wishlist.toggle(product.id);
+  };
+
   return (
-    <motion.article
-      className={styles.card}
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.7, delay: (index % 4) * 0.06, ease: [0.16, 1, 0.3, 1] }}
+    <article
+      className={`${styles.card} ${compact ? styles.compact : ''}`}
+      data-tone={TONE[product.category] || 'rose'}
+      style={{ animationDelay: `${(index % 4) * 60}ms` }}
     >
-      <div className={styles.media} onClick={() => onQuickView?.(product)}>
+      <Link to={`/product/${product.id}`} className={styles.media} {...tilt}>
+        <span className={styles.frame}>
+          <img src={product.image} alt={product.name} loading="lazy" decoding="async" />
+          <span className={styles.glare} aria-hidden="true" />
+          <span className={styles.veil} aria-hidden="true" />
+        </span>
+
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
-        <img src={product.image} alt={product.name} loading="lazy" />
+
         <button
-          className={styles.quickAdd}
-          onClick={(e) => { e.stopPropagation(); onAdd?.(product); }}
+          className={`${styles.heart} ${saved ? styles.heartOn : ''}`}
+          onClick={save}
+          aria-label={saved ? `Remove ${product.name} from wishlist` : `Save ${product.name}`}
+          aria-pressed={saved}
         >
-          Add to bag
+          <svg width="15" height="15" viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8">
+            <path d="M12 20.5 4.6 13a4.7 4.7 0 0 1 6.6-6.7l.8.8.8-.8A4.7 4.7 0 0 1 19.4 13z" strokeLinejoin="round" />
+          </svg>
         </button>
-      </div>
+
+        {onAdd && (
+          <span className={styles.tools}>
+            <button className={`${styles.add} ${added ? styles.addOn : ''}`} onClick={add}>
+              {added ? 'Added' : 'Add to cart'}
+            </button>
+          </span>
+        )}
+      </Link>
+
       <div className={styles.info}>
-        <h3 className={styles.name}>{product.name}</h3>
+        <h3 className={styles.name}>
+          <Link to={`/product/${product.id}`}>{product.name}</Link>
+        </h3>
         <div className={styles.line}>
           <span className={styles.tagline}>{product.tagline}</span>
-          <span className={styles.price}>{product.currency} {product.price.toLocaleString()}</span>
+          <span className={styles.price}>
+            {product.currency} {product.price.toLocaleString()}
+          </span>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

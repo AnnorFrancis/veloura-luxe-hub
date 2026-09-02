@@ -1,47 +1,77 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { EDITORIAL } from '../data/products';
+import { CATEGORIES, countOf } from '../data/products';
+import { useTilt, useReveal } from '../hooks/useMotionKit';
+import { Sprig } from '../components/Logo';
 import styles from './Categories.module.css';
 
-const CATS = [
-  { id: 'shirts',    title: 'Shirts & Polos', count: '6 pieces',  image: EDITORIAL.stripe },
-  { id: 'shoes',     title: 'Shoes & Sandals', count: '5 pieces', image: '/products/collection-grid.jpg' },
-  { id: 'trousers',  title: 'Trousers',        count: '3 pieces', image: EDITORIAL.wave },
-  { id: 'fragrance', title: 'Fragrance',       count: '4 formulas', image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=1000&q=85&auto=format&fit=crop' },
-];
+function Card({ cat, index }) {
+  const tilt = useTilt({ max: 8, scale: 1.015 });
+  return (
+    <article
+      className={`${styles.card} reveal`}
+      data-tone={cat.tone}
+      style={{ transitionDelay: `${(index % 5) * 70}ms` }}
+    >
+      <Link
+        to={`/shop?cat=${cat.id}`}
+        className={styles.inner}
+        {...tilt}
+      >
+        <span className={styles.media}>
+          <img src={cat.cover} alt={cat.label} loading="lazy" />
+          <span className={styles.wash} aria-hidden="true" />
+          <span className={styles.glare} aria-hidden="true" />
+        </span>
+
+        <span className={styles.count}>{countOf(cat.id)}</span>
+
+        <span className={styles.body}>
+          <span className={styles.head}>
+            <h3>{cat.label}</h3>
+            <span className={styles.go} aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h13M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </span>
+          <p>{cat.blurb}</p>
+        </span>
+      </Link>
+    </article>
+  );
+}
 
 export default function Categories() {
+  const ref = useReveal();
   return (
-    <section className={`section-padding ${styles.section}`}>
+    <section className={`section-padding ${styles.section}`} ref={ref} id="departments">
+      <span className={`blob ${styles.blobA}`} aria-hidden="true" />
+      <span className={`blob ${styles.blobB}`} aria-hidden="true" />
+
       <div className="container">
-        <div className={styles.head}>
-          <div>
+        <header className={styles.head}>
+          <div className="reveal">
             <span className="eyebrow">Shop by department</span>
-            <h2 className={styles.title}>The four things a man wears.</h2>
+            <h2 className={`display-lg ${styles.title}`}>
+              Nine things she<br />
+              <em className="serif-italic tinted">actually</em> reaches for.
+            </h2>
           </div>
-          <Link to="/collections" className={styles.all}>View everything →</Link>
-        </div>
+          <div className={`${styles.headSide} reveal`}>
+            <p className="lede">
+              Every department is stocked with pieces we have felt, fitted and
+              worn ourselves, from a Monday cotton brief to a Saturday satin set.
+            </p>
+            <Link to="/shop" className="link-arrow">
+              View everything <span aria-hidden="true">→</span>
+            </Link>
+            <Sprig className={styles.sprig} flip />
+          </div>
+        </header>
 
         <div className={styles.grid}>
-          {CATS.map((c, i) => (
-            <motion.div
-              key={c.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.7, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
-              className={styles.card}
-            >
-              <Link to={`/collections?cat=${c.id}`} className={styles.link}>
-                <div className={styles.media}>
-                  <img src={c.image} alt={c.title} loading="lazy" />
-                </div>
-                <div className={styles.info}>
-                  <h3>{c.title}</h3>
-                  <span>{c.count}</span>
-                </div>
-              </Link>
-            </motion.div>
+          {CATEGORIES.map((c, i) => (
+            <Card key={c.id} cat={c} index={i} />
           ))}
         </div>
       </div>
