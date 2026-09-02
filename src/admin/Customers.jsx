@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { CUSTOMERS } from './data';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const money = (n) => `GH₵ ${n.toLocaleString()}`;
@@ -24,6 +25,11 @@ export default function Customers() {
 
   return (
     <>
+      <Intro>
+        Everyone who has bought from you. Look somebody up before they arrive so
+        you already know their size and what they like.
+      </Intro>
+
       <div className={s.kpis}>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Customers</span>

@@ -4,6 +4,7 @@ import {
 import {
   KPIS, SALES_7D, LOW_STOCK, ORDERS, APPOINTMENTS, stockState,
 } from './data';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const money = (n) => `GH₵ ${n.toLocaleString()}`;
@@ -28,6 +29,11 @@ export default function Overview({ onNavigate }) {
 
   return (
     <>
+      <Intro>
+        What needs doing today. Everything waiting for you is on this screen,
+        and each list takes you straight to the section that handles it.
+      </Intro>
+
       <div className={s.kpis}>
         {KPIS.map((k) => (
           <div className={`${s.kpi} ${k.warn ? s.kpiWarn : ''}`} key={k.id}>

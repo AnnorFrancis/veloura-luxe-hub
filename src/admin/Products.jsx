@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { INVENTORY, stockState } from './data';
 import { CATEGORIES } from '../data/products';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const money = (n) => `GH₵ ${n.toLocaleString()}`;
@@ -47,6 +48,12 @@ export default function Products() {
 
   return (
     <>
+      <Intro>
+        Everything you sell, with the price and how many are left. When stock
+        comes in or goes out, change the number here and the shop updates
+        straight away.
+      </Intro>
+
       <div className={s.kpis}>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Products listed</span>

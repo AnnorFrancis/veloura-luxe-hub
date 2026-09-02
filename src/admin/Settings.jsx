@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { STORE } from '../data/site';
+import { DISCOUNTS } from './data';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const SHIPPING = [
@@ -11,6 +13,7 @@ const SHIPPING = [
 
 export default function Settings() {
   const [saved, setSaved] = useState(false);
+  const [codes, setCodes] = useState(DISCOUNTS);
   const [toggles, setToggles] = useState({
     discreet: true,
     lowStockAlerts: true,
@@ -20,6 +23,8 @@ export default function Settings() {
   });
 
   const flip = (k) => setToggles((p) => ({ ...p, [k]: !p[k] }));
+  const flipCode = (code) =>
+    setCodes((p) => p.map((c) => (c.code === code ? { ...c, active: !c.active } : c)));
 
   const save = (e) => {
     e.preventDefault();
@@ -28,6 +33,12 @@ export default function Settings() {
   };
 
   return (
+    <>
+      <Intro>
+        Your shop details, how much delivery costs, and your discount codes.
+        These are the things that stay the same from day to day.
+      </Intro>
+
     <div className={s.row2}>
       <section className={s.card}>
         <header className={s.cardHead}>
@@ -128,7 +139,49 @@ export default function Settings() {
             </table>
           </div>
         </section>
+
+        <section className={s.card}>
+          <header className={s.cardHead}>
+            <div>
+              <span className={s.cardEyebrow}>Discounts</span>
+              <h2>Your codes</h2>
+            </div>
+            <button className={s.primaryBtn}>New code</button>
+          </header>
+          <p className={s.hint}>
+            Switch a code off and it stops working straight away, at the
+            counter and online.
+          </p>
+          <div className={s.tableWrap}>
+            <table className={s.table}>
+              <thead>
+                <tr><th>Code</th><th>What it does</th><th>Times used</th><th>Ends</th><th>On or off</th></tr>
+              </thead>
+              <tbody>
+                {codes.map((c) => (
+                  <tr key={c.code}>
+                    <td className={s.mono}><b>{c.code}</b></td>
+                    <td>{c.type}</td>
+                    <td>{c.used}{c.cap ? <span className={s.sub}> of {c.cap}</span> : null}</td>
+                    <td className={s.sub}>{c.ends}</td>
+                    <td>
+                      <button
+                        className={`${s.toggle} ${c.active ? s.toggleOn : ''}`}
+                        onClick={() => flipCode(c.code)}
+                        aria-pressed={c.active}
+                      >
+                        <span />
+                        {c.active ? 'On' : 'Off'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { APPOINTMENTS } from './data';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const DAYS = ['Today', 'Tomorrow', 'Wednesday'];
@@ -14,6 +15,11 @@ export default function Appointments() {
 
   return (
     <>
+      <Intro>
+        Who is booked into the fitting room and when. Confirm them the day
+        before, and cancel if they call off.
+      </Intro>
+
       <div className={s.kpis}>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Booked this week</span>

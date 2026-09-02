@@ -28,14 +28,17 @@
   color: var(--ink-3);
   margin-bottom: 8px;
 }
+/* Kept deliberately modest. These are numbers to read, not a scoreboard,
+   and an oversized figure makes the page feel like a report rather than a
+   tool. */
 .kpiValue {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-size: clamp(1.1rem, 1.3vw, 1.3rem);
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   color: var(--ink);
-  margin-bottom: 7px;
+  margin-bottom: 6px;
 }
 .kpiDelta { font-size: 11.5px; font-weight: 600; color: var(--ink-3); }
 .kpiUp { color: var(--leaf-deep); }
@@ -69,10 +72,19 @@
 }
 .cardHead h2 {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.06rem;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   color: var(--ink);
+}
+
+/* The plain-words explanation that opens every section. */
+.intro {
+  max-width: 62ch;
+  margin: -4px 0 20px;
+  font-size: 13.5px;
+  line-height: 1.62;
+  color: var(--ink-2);
 }
 
 .row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
@@ -547,4 +559,120 @@
   .search { min-width: 100%; }
   .toolRight { width: 100%; }
   .formRow, .defs { grid-template-columns: 1fr; }
+}
+
+/* ═══ Point of Sale ═══════════════════════════════════════ */
+.pos { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr); gap: 18px; align-items: start; }
+.pos > .card { margin-bottom: 0; }
+.posChips { margin: 12px 0 16px; }
+.pos .search { width: 100%; max-width: none; }
+
+.posGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 10px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.posItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--shell);
+  text-align: left;
+  transition: border-color 0.25s ease, transform 0.3s var(--ease-out-expo);
+}
+.posItem:hover:not(:disabled) { border-color: var(--rose); transform: translateY(-2px); }
+.posItem img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; margin-bottom: 5px; }
+.posItem b { font-size: 12px; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.posItem i { font-style: normal; font-size: 12px; font-weight: 700; color: var(--rose-deep); }
+.posItem em { font-style: normal; font-size: 10.5px; font-weight: 700; }
+.posLeftTag { color: var(--ink-3); }
+.posOutTag { color: var(--rose-deep); }
+.posItemOut { opacity: 0.5; cursor: not-allowed; }
+
+.ticket { position: sticky; top: 18px; }
+.ticketList { list-style: none; display: flex; flex-direction: column; gap: 10px; max-height: 38vh; overflow-y: auto; }
+.ticketList li { display: flex; align-items: center; gap: 10px; }
+.ticketList img { width: 42px; height: 42px; object-fit: cover; border-radius: 8px; flex: none; }
+.ticketMain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ticketMain b { font-size: 12.5px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.ticketMain i { font-style: normal; font-size: 11px; color: var(--ink-3); }
+.ticketLine { font-size: 12.5px; font-weight: 800; color: var(--ink); flex: none; min-width: 62px; text-align: right; }
+.stepperQty { min-width: 20px; text-align: center; font-size: 12.5px; font-weight: 800; }
+
+.ticketFoot { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.ticketTotal {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.ticketTotal span { font-size: 12.5px; font-weight: 600; color: var(--ink-3); }
+.ticketTotal b { font-family: var(--font-display); font-size: 1.2rem; font-weight: 600; color: var(--ink); }
+.fieldLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+.payRow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.hint { font-size: 12px; color: var(--ink-2); margin: -6px 0 14px; }
+
+.saleDone { text-align: center; padding: 44px 24px 40px; }
+.saleTick {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--mint-wash);
+  color: var(--leaf-deep);
+}
+.saleTick svg { width: 26px; height: 26px; }
+.saleDone h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.saleSum { font-size: 14px; color: var(--ink-2); margin-bottom: 22px; }
+
+/* ═══ Reports ═════════════════════════════════════════════ */
+.reportList { list-style: none; display: flex; flex-direction: column; }
+.reportList li {
+  display: grid;
+  grid-template-columns: 160px 130px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.reportList li:last-child { border-bottom: 0; }
+.reportKey { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+.reportVal { font-family: var(--font-display); font-size: 1.12rem; font-weight: 600; color: var(--rose-deep); }
+.reportNote { font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
+
+/* ═══ Help ════════════════════════════════════════════════ */
+.helpList { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.helpList li { max-width: 74ch; }
+.helpName { display: block; font-size: 13.5px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+.helpWhat { font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+.helpCan { font-size: 13px; line-height: 1.6; color: var(--ink-2); margin-top: 3px; }
+.helpCan span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  margin-right: 6px;
+}
+
+@media (max-width: 1100px) {
+  .pos { grid-template-columns: 1fr; }
+  .ticket { position: static; }
+  .reportList li { grid-template-columns: 1fr; gap: 3px; }
 }

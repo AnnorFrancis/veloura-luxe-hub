@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ORDERS, timeAgo } from './data';
+import Intro from './Intro';
 import s from './admin.module.css';
 
 const money = (n) => `GH₵ ${n.toLocaleString()}`;
@@ -46,6 +47,12 @@ export default function Orders() {
 
   return (
     <>
+      <Intro>
+        Everything bought online or on WhatsApp that still has to be packed and
+        sent. Move an order along as you go and the customer sees the same
+        thing on their side.
+      </Intro>
+
       <div className={s.toolbar}>
         <div className={s.chips}>
           {FILTERS.map((f) => (
