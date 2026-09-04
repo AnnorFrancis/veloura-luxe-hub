@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { ORDERS, timeAgo } from './data';
+import { timeAgo } from './data';
+import { useOrders } from '../store/useShop';
+import { live } from '../store/live';
 import Intro from './Intro';
 import s from './admin.module.css';
 
@@ -13,17 +15,19 @@ const tagFor = (status) => ({
 }[status] || s.tagOk);
 
 export default function Orders() {
-  const [statuses, setStatuses] = useState(() =>
-    Object.fromEntries(ORDERS.map((o) => [o.id, o.status]))
-  );
+  /* Orders placed on the website arrive at the top of this list without a
+     reload, which is the whole point of the two being one system. */
+  const orders = useOrders();
+  const [moved, setMoved] = useState({});
+  const statusOf = (o) => moved[o.id] || o.status;
   const [filter, setFilter] = useState('All');
   const [q, setQ] = useState('');
   const [openId, setOpenId] = useState(null);
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return ORDERS.filter((o) => {
-      const st = statuses[o.id];
+    return orders.filter((o) => {
+      const st = statusOf(o);
       if (filter !== 'All' && st !== filter) return false;
       if (!term) return true;
       return (
@@ -32,16 +36,26 @@ export default function Orders() {
         o.area.toLowerCase().includes(term)
       );
     });
-  }, [filter, q, statuses]);
+    // statusOf reads `moved`, which is already a dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, q, moved, orders]);
 
-  const open = ORDERS.find((o) => o.id === openId);
-  const advance = (id) => {
-    const i = FLOW.indexOf(statuses[id]);
-    if (i > -1 && i < FLOW.length - 1) setStatuses((p) => ({ ...p, [id]: FLOW[i + 1] }));
+  const open = orders.find((o) => o.id === openId);
+  const advance = (o) => {
+    const i = FLOW.indexOf(statusOf(o));
+    if (i > -1 && i < FLOW.length - 1) setMoved((p) => ({ ...p, [o.id]: FLOW[i + 1] }));
+  };
+
+  /* A return puts the pieces back on the shelf, so the website shows them
+     for sale again straight away. */
+  const refund = (o) => {
+    live.refundOrder(o);
+    setMoved((p) => ({ ...p, [o.id]: 'Refunded' }));
+    setOpenId(null);
   };
 
   const counts = FILTERS.reduce((acc, f) => {
-    acc[f] = f === 'All' ? ORDERS.length : ORDERS.filter((o) => statuses[o.id] === f).length;
+    acc[f] = f === 'All' ? orders.length : orders.filter((o) => statusOf(o) === f).length;
     return acc;
   }, {});
 
@@ -98,15 +112,15 @@ export default function Orders() {
                   <td>{o.channel}</td>
                   <td>{o.payment}</td>
                   <td><b>{money(o.total)}</b></td>
-                  <td><span className={`${s.tag} ${tagFor(statuses[o.id])}`}>{statuses[o.id]}</span></td>
+                  <td><span className={`${s.tag} ${tagFor(statusOf(o))}`}>{statusOf(o)}</span></td>
                   <td className={s.sub}>{timeAgo(o.hoursAgo)}</td>
                   <td>
-                    {FLOW.indexOf(statuses[o.id]) > -1 && FLOW.indexOf(statuses[o.id]) < 3 && (
+                    {FLOW.indexOf(statusOf(o)) > -1 && FLOW.indexOf(statusOf(o)) < 3 && (
                       <button
                         className={s.smallBtn}
-                        onClick={(e) => { e.stopPropagation(); advance(o.id); }}
+                        onClick={(e) => { e.stopPropagation(); advance(o); }}
                       >
-                        Mark {FLOW[FLOW.indexOf(statuses[o.id]) + 1].toLowerCase()}
+                        Mark {FLOW[FLOW.indexOf(statusOf(o)) + 1].toLowerCase()}
                       </button>
                     )}
                   </td>
@@ -165,13 +179,18 @@ export default function Orders() {
               </dl>
 
               <div className={s.drawerActions}>
-                <span className={`${s.tag} ${tagFor(statuses[open.id])}`}>{statuses[open.id]}</span>
-                {FLOW.indexOf(statuses[open.id]) > -1 && FLOW.indexOf(statuses[open.id]) < 3 && (
-                  <button className={s.primaryBtn} onClick={() => advance(open.id)}>
-                    Mark {FLOW[FLOW.indexOf(statuses[open.id]) + 1].toLowerCase()}
+                <span className={`${s.tag} ${tagFor(statusOf(open))}`}>{statusOf(open)}</span>
+                {FLOW.indexOf(statusOf(open)) > -1 && FLOW.indexOf(statusOf(open)) < 3 && (
+                  <button className={s.primaryBtn} onClick={() => advance(open)}>
+                    Mark {FLOW[FLOW.indexOf(statusOf(open)) + 1].toLowerCase()}
                   </button>
                 )}
                 <button className={s.ghostBtn}>Print waybill</button>
+                {statusOf(open) !== 'Refunded' && (
+                  <button className={s.ghostBtn} onClick={() => refund(open)}>
+                    Refund and take back
+                  </button>
+                )}
               </div>
             </div>
           </aside>

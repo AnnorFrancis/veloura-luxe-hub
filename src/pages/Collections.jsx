@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import PageHero from '../components/PageHero';
-import { CATEGORIES, PRODUCTS, byCategory, countOf } from '../data/products';
+import { CATEGORIES } from '../data/products';
+import { useShopProducts } from '../store/useShop';
 import { cartApi } from '../hooks/useCart';
 import { useReveal } from '../hooks/useMotionKit';
 import styles from './Collections.module.css';
@@ -22,6 +23,7 @@ export default function Collections() {
   const [sort, setSort] = useState('featured');
   const [shown, setShown] = useState(PAGE);
   const ref = useReveal();
+  const products = useShopProducts();
 
   // Reset paging when the filter changes, adjusted during render rather
   // than in an effect, so the grid never paints a stale page first.
@@ -35,12 +37,12 @@ export default function Collections() {
   const active = CATEGORIES.find((c) => c.id === cat);
 
   const list = useMemo(() => {
-    const base = [...byCategory(cat)];
+    const base = cat === 'all' ? [...products] : products.filter((x) => x.category === cat);
     if (sort === 'low') base.sort((a, b) => a.price - b.price);
     if (sort === 'high') base.sort((a, b) => b.price - a.price);
     if (sort === 'az') base.sort((a, b) => a.name.localeCompare(b.name));
     return base;
-  }, [cat, sort]);
+  }, [cat, sort, products]);
 
   const setCat = (id) => {
     if (id === 'all') setParams({});
@@ -67,7 +69,7 @@ export default function Collections() {
               className={`${styles.chip} ${cat === 'all' ? styles.chipOn : ''}`}
               onClick={() => setCat('all')}
             >
-              All <i>{PRODUCTS.length}</i>
+              All <i>{products.length}</i>
             </button>
             {CATEGORIES.map((c) => (
               <button
@@ -76,7 +78,7 @@ export default function Collections() {
                 className={`${styles.chip} ${cat === c.id ? styles.chipOn : ''}`}
                 onClick={() => setCat(c.id)}
               >
-                {c.short} <i>{countOf(c.id)}</i>
+                {c.short} <i>{products.filter((x) => x.category === c.id).length}</i>
               </button>
             ))}
           </div>

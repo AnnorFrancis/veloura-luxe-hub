@@ -1,9 +1,8 @@
 import {
   AreaChart, Area, ResponsiveContainer, XAxis, Tooltip, CartesianGrid,
 } from 'recharts';
-import {
-  KPIS, SALES_7D, LOW_STOCK, ORDERS, APPOINTMENTS, stockState,
-} from './data';
+import { KPIS, SALES_7D } from './data';
+import { useOrders, useFittings, useCatalogue, useActivity, stockState } from '../store/useShop';
 import Intro from './Intro';
 import s from './admin.module.css';
 
@@ -24,8 +23,13 @@ const tip = {
  * because the shape of the week is worth a glance and a second chart is not.
  */
 export default function Overview({ onNavigate }) {
-  const toPack = ORDERS.filter((o) => o.status === 'Paid' || o.status === 'Packing');
-  const today = APPOINTMENTS.filter((a) => a.day === 'Today');
+  const orders = useOrders();
+  const fittings = useFittings();
+  const catalogue = useCatalogue();
+  const activity = useActivity();
+  const toPack = orders.filter((o) => o.status === 'Paid' || o.status === 'Packing');
+  const today = fittings.filter((a) => a.day === 'Today' || a.isNew);
+  const lowStock = catalogue.filter((i) => stockState(i) !== 'ok').sort((a, b) => a.stock - b.stock);
 
   return (
     <>
@@ -77,6 +81,26 @@ export default function Overview({ onNavigate }) {
         </div>
       </section>
 
+      {activity.length > 0 && (
+        <section className={s.card}>
+          <header className={s.cardHead}>
+            <div>
+              <span className={s.cardEyebrow}>Live</span>
+              <h2>Just happened</h2>
+            </div>
+            <span className={s.pill}>Shop and counter</span>
+          </header>
+          <ul className={s.feed}>
+            {activity.slice(0, 6).map((a) => (
+              <li key={a.id}>
+                <span className={`${s.feedDot} ${s[`feed_${a.kind}`] || ''}`} aria-hidden="true" />
+                {a.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {/* ── What needs doing ─────────────────────── */}
       <div className={s.row3}>
         <section className={s.card}>
@@ -106,13 +130,13 @@ export default function Overview({ onNavigate }) {
         <section className={`${s.card} ${s.cardAlert}`}>
           <header className={s.cardHead}>
             <div>
-              <span className={s.cardEyebrow}>{LOW_STOCK.length} to order</span>
+              <span className={s.cardEyebrow}>{lowStock.length} to order</span>
               <h2>Order more</h2>
             </div>
             <button className={s.linkBtn} onClick={() => onNavigate('products')}>Open stock</button>
           </header>
           <ul className={s.list}>
-            {LOW_STOCK.slice(0, 5).map((i) => (
+            {lowStock.slice(0, 5).map((i) => (
               <li key={i.id}>
                 <div className={s.listMain}>
                   <b>{i.name}</b>

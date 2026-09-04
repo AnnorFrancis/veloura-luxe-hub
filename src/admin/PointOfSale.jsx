@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { INVENTORY, PAY_METHODS, stockState } from './data';
+import { PAY_METHODS } from './data';
+import { useCatalogue, stockState } from '../store/useShop';
+import { live } from '../store/live';
 import { CATEGORIES } from '../data/products';
 import Intro from './Intro';
 import s from './admin.module.css';
@@ -20,14 +22,15 @@ export default function PointOfSale() {
   const [ticket, setTicket] = useState([]);
   const [pay, setPay] = useState(PAY_METHODS[0]);
   const [done, setDone] = useState(null);
+  const catalogue = useCatalogue();
 
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return INVENTORY
+    return catalogue
       .filter((i) => (cat === 'all' || i.category === cat)
         && (!term || i.name.toLowerCase().includes(term) || i.sku.toLowerCase().includes(term)))
       .slice(0, 18);
-  }, [q, cat]);
+  }, [q, cat, catalogue]);
 
   const add = (item) => {
     setTicket((t) => {
@@ -45,8 +48,20 @@ export default function PointOfSale() {
   const total = ticket.reduce((sum, l) => sum + l.price * l.qty, 0);
   const pieces = ticket.reduce((sum, l) => sum + l.qty, 0);
 
+  /* A counter sale is an order like any other: it drops the stock the
+     website shows and lands in Orders next to the online ones. Sold on
+     credit, it opens an account in the Credit Book instead. */
   const complete = () => {
-    setDone({ pieces, total, pay });
+    const order = live.placeOrder({
+      lines: ticket.map((l) => ({ ...l, stock: catalogue.find((c) => c.id === l.id)?.stock ?? 0 })),
+      customer: pay === 'On credit' ? 'Counter customer' : 'Walk-in customer',
+      area: 'Osu shop',
+      phone: '',
+      channel: 'In store',
+      payment: pay,
+      onCredit: pay === 'On credit',
+    });
+    setDone({ pieces, total, pay, id: order.id });
     setTicket([]);
   };
 
@@ -63,6 +78,7 @@ export default function PointOfSale() {
             </svg>
           </span>
           <h2>Sale complete</h2>
+          <p className={s.saleRef}>Recorded as {done.id}</p>
           <p className={s.saleSum}>
             {done.pieces} {done.pieces === 1 ? 'piece' : 'pieces'} for <b>{money(done.total)}</b>
             {done.pay === 'On credit' ? ', put on credit.' : `, paid by ${done.pay}.`}

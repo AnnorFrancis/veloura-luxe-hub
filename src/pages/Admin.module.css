@@ -152,8 +152,12 @@
 }
 .menuBtn span { display: block; height: 1.6px; background: var(--ink); border-radius: 2px; }
 
+/* Only the position moves, never the opacity. A backgrounded tab or a phone
+   in low-power mode throttles animation frames, and a section that starts at
+   zero opacity can sit there blank until the frames resume. Sliding from 8px
+   fails safe: the worst case is content that is very slightly offset. */
 .viewBody { animation: viewIn 0.3s var(--ease-out-expo); }
-@keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes viewIn { from { transform: translateY(8px); } to { transform: none; } }
 
 /* ── Responsive ────────────────────────────────────────── */
 @media (max-width: 1024px) {

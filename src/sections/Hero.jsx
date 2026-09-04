@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import Aurora from '../components/Aurora';
 import { Sprig, Star } from '../components/Logo';
 import { useTilt } from '../hooks/useMotionKit';
-import { HERO_SLIDES, PRODUCTS, CATEGORIES } from '../data/products';
+import { HERO_SLIDES, CATEGORIES } from '../data/products';
+import { useShopProducts } from '../store/useShop';
 import styles from './Hero.module.css';
 
 const B = import.meta.env.BASE_URL || '/';
@@ -16,6 +17,7 @@ export default function Hero() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const barRef = useRef(null);
+  const shopProducts = useShopProducts();
   const tilt = useTilt({ max: 7, scale: 1.015 });
   const cardTilt = useTilt({ max: 13, scale: 1.04 });
 
@@ -35,7 +37,7 @@ export default function Hero() {
   }, [i, paused, go]);
 
   const slide = HERO_SLIDES[i];
-  const featured = PRODUCTS.find((p) => p.badge === 'Bestseller');
+  const featured = shopProducts.find((p) => p.badge === 'Bestseller');
 
   return (
     <section className={styles.hero} data-tone="rose">

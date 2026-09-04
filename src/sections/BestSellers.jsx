@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { getBestSellers, getNewIn } from '../data/products';
+import { useShopProducts } from '../store/useShop';
 import { useReveal } from '../hooks/useMotionKit';
 import styles from './BestSellers.module.css';
 
 const TABS = [
-  { id: 'best', label: 'Best sellers', get: getBestSellers },
-  { id: 'new', label: 'New in', get: getNewIn },
+  { id: 'best', label: 'Best sellers', badge: 'Bestseller' },
+  { id: 'new', label: 'New in', badge: 'New' },
 ];
 
 export default function BestSellers({ onAdd }) {
@@ -15,7 +15,9 @@ export default function BestSellers({ onAdd }) {
   const railRef = useRef(null);
   const ref = useReveal();
 
-  const products = TABS.find((t) => t.id === tab).get();
+  const shop = useShopProducts();
+  const badge = TABS.find((t) => t.id === tab).badge;
+  const products = shop.filter((x) => x.badge === badge).slice(0, 8);
 
   const nudge = (dir) => {
     const rail = railRef.current;

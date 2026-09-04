@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { APPOINTMENTS } from './data';
+import { useFittings } from '../store/useShop';
 import Intro from './Intro';
 import s from './admin.module.css';
 
 const DAYS = ['Today', 'Tomorrow', 'Wednesday'];
 
 export default function Appointments() {
+  const APPOINTMENTS = useFittings();
   const [state, setState] = useState(() =>
     Object.fromEntries(APPOINTMENTS.map((a) => [a.id, a.status]))
   );

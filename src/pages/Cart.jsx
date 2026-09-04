@@ -4,7 +4,8 @@ import PageHero from '../components/PageHero';
 import ProductCard from '../components/ProductCard';
 import { useCart, cartApi } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
-import { PRODUCTS, getBestSellers } from '../data/products';
+import { useShopProducts, useCodes } from '../store/useShop';
+import { live } from '../store/live';
 import { Star } from '../components/Logo';
 import { useReveal } from '../hooks/useMotionKit';
 import styles from './Cart.module.css';
@@ -27,20 +28,49 @@ export function Cart() {
   const [placed, setPlaced] = useState(false);
   const ref = useReveal();
 
+  const shopProducts = useShopProducts();
+  const codes = useCodes();
+
   const currency = items[0]?.currency || 'GH₵';
   const option = DELIVERY_OPTIONS.find((o) => o.id === ship);
   const freeQualified = subtotal >= FREE_OVER && ship === 'accra';
-  const shipFee = items.length === 0 || freeQualified ? 0 : option.fee;
+  const freeShipCode = Boolean(applied && !applied.invalid && applied.free);
+  const shipFee = items.length === 0 || freeQualified || freeShipCode ? 0 : option.fee;
   const discount = applied ? Math.round(subtotal * applied.pct) : 0;
   const total = Math.max(0, subtotal - discount) + shipFee;
   const toFree = Math.max(0, FREE_OVER - subtotal);
 
+  /* Codes are whatever the management system currently has switched on,
+     so turning one off in Settings stops it working here straight away. */
   const applyCode = (e) => {
     e.preventDefault();
     const c = code.trim().toUpperCase();
-    if (c === 'VELOURA10') setApplied({ code: c, pct: 0.1 });
-    else if (c === 'WELCOME5') setApplied({ code: c, pct: 0.05 });
-    else setApplied({ code: c, pct: 0, invalid: true });
+    const found = codes.find((x) => x.code === c && x.active);
+    if (!found) { setApplied({ code: c, pct: 0, invalid: true }); return; }
+    const pct = /(\d+)\s*%/.exec(found.type);
+    setApplied({ code: c, pct: pct ? Number(pct[1]) / 100 : 0, free: /free/i.test(found.type) });
+  };
+
+  /* One checkout writes the order, drops the stock and, if a code was used,
+     counts it against that code. The management system sees all three. */
+  const checkout = () => {
+    const option = DELIVERY_OPTIONS.find((o) => o.id === ship);
+    live.placeOrder({
+      lines: items.map((i) => ({
+        id: i.id, name: i.name, image: i.image, price: i.price, qty: i.qty, size: i.size,
+        stock: shopProducts.find((p) => p.id === i.id)?.stock ?? 0,
+      })),
+      customer: 'Website customer',
+      area: option.id === 'collect' ? 'Collect in store' : option.label,
+      phone: '',
+      channel: 'Website',
+      payment: 'Paid online',
+      shipping: shipFee,
+      discount,
+    });
+    if (applied && !applied.invalid) live.useCode(applied.code);
+    setPlaced(true);
+    clear();
   };
 
   if (placed) {
@@ -87,7 +117,7 @@ export function Cart() {
               <div className={styles.suggest}>
                 <h2 className={styles.suggestHead}>Popular right now</h2>
                 <div className={styles.suggestGrid}>
-                  {getBestSellers().slice(0, 4).map((p, i) => (
+                  {shopProducts.filter((x) => x.badge === 'Bestseller').slice(0, 4).map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} onAdd={(x, o) => cartApi.add(x, o)} />
                   ))}
                 </div>
@@ -104,7 +134,7 @@ export function Cart() {
                 </div>
 
                 {items.map((it) => {
-                  const product = PRODUCTS.find((p) => p.id === it.id);
+                  const product = shopProducts.find((p) => p.id === it.id);
                   return (
                     <div className={styles.line} key={it.key}>
                       <Link to={product ? `/product/${product.id}` : '/shop'} className={styles.lineThumb}>
@@ -209,7 +239,7 @@ export function Cart() {
                     keeps counting pieces that have already been bought. */}
                 <button
                   className={`btn btn-primary ${styles.checkout}`}
-                  onClick={() => { setPlaced(true); clear(); }}
+                  onClick={checkout}
                 >
                   Checkout
                 </button>
@@ -235,7 +265,10 @@ export function Cart() {
 export function Wishlist() {
   const { ids, remove, clear } = useWishlist();
   const ref = useReveal();
-  const saved = ids.map((id) => PRODUCTS.find((p) => p.id === id)).filter(Boolean);
+  const shopProducts = useShopProducts();
+  /* A saved piece that has since been taken off the website drops out here
+     too, rather than leading to a dead product page. */
+  const saved = ids.map((id) => shopProducts.find((p) => p.id === id)).filter(Boolean);
 
   return (
     <div className={styles.page} ref={ref}>

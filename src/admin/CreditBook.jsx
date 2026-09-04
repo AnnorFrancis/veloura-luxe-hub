@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { CREDIT } from './data';
+import { useCredit } from '../store/useShop';
+import { live } from '../store/live';
 import Intro from './Intro';
 import s from './admin.module.css';
 
@@ -11,9 +12,9 @@ const money = (n) => `GH₵ ${n.toLocaleString()}`;
  * that is all this page shows.
  */
 export default function CreditBook() {
-  const [settled, setSettled] = useState({});
-
-  const open = CREDIT.filter((c) => !settled[c.id]);
+  /* Anything sold on credit at the counter lands here by itself. */
+  const open = useCredit();
+  const [cleared, setCleared] = useState(0);
   const owed = open.reduce((sum, c) => sum + c.owed, 0);
   const late = open.filter((c) => c.daysOwing > 30);
 
@@ -39,7 +40,7 @@ export default function CreditBook() {
         </div>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Cleared today</span>
-          <div className={s.kpiValue}>{Object.keys(settled).length}</div>
+          <div className={s.kpiValue}>{cleared}</div>
           <span className={s.kpiDelta}>Marked as paid on this screen</span>
         </div>
       </div>
@@ -86,7 +87,7 @@ export default function CreditBook() {
                     <td>
                       <button
                         className={s.ghostBtn}
-                        onClick={() => setSettled((p) => ({ ...p, [c.id]: true }))}
+                        onClick={() => { live.settleCredit(c.id, c.name); setCleared((n) => n + 1); }}
                       >
                         Mark paid
                       </button>

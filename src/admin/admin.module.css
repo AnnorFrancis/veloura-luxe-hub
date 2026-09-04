@@ -639,6 +639,14 @@
 }
 .saleTick svg { width: 26px; height: 26px; }
 .saleDone h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.saleRef {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose-deep);
+  margin-bottom: 10px;
+}
 .saleSum { font-size: 14px; color: var(--ink-2); margin-bottom: 22px; }
 
 /* ═══ Reports ═════════════════════════════════════════════ */
@@ -676,3 +684,29 @@
   .ticket { position: static; }
   .reportList li { grid-template-columns: 1fr; gap: 3px; }
 }
+
+/* A piece taken off the website still sits in the list, just clearly out of play. */
+.rowHidden td { opacity: 0.55; }
+.rowHidden td:last-child { opacity: 1; }
+
+/* ── Live feed ───────────────────────────────────────────── */
+.feed { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.feed li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.feedDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rose);
+  flex: none;
+}
+.feed_order { background: var(--leaf); }
+.feed_stock { background: var(--sea); }
+.feed_publish { background: var(--lilac); }
+.feed_credit { background: var(--sun); }
+.feed_refund { background: var(--peach); }

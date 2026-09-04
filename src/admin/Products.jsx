@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { INVENTORY, stockState } from './data';
+import { useCatalogue, stockState } from '../store/useShop';
+import { live } from '../store/live';
 import { CATEGORIES } from '../data/products';
 import Intro from './Intro';
 import s from './admin.module.css';
@@ -9,12 +10,11 @@ const STOCK_FILTERS = [
   { id: 'all', label: 'Everything' },
   { id: 'low', label: 'Nearly finished' },
   { id: 'out', label: 'Finished' },
+  { id: 'hidden', label: 'Hidden from the website' },
 ];
 
 export default function Products() {
-  const [levels, setLevels] = useState(() =>
-    Object.fromEntries(INVENTORY.map((i) => [i.id, i.stock]))
-  );
+  const catalogue = useCatalogue();
   const [cat, setCat] = useState('all');
   const [stockFilter, setStockFilter] = useState('all');
   const [q, setQ] = useState('');
@@ -23,28 +23,27 @@ export default function Products() {
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
-    const list = INVENTORY.filter((i) => {
+    const list = catalogue.filter((i) => {
       if (cat !== 'all' && i.category !== cat) return false;
-      const state = stockState({ ...i, stock: levels[i.id] });
+      const state = stockState(i);
       if (stockFilter === 'low' && state !== 'low') return false;
       if (stockFilter === 'out' && state !== 'out') return false;
+      if (stockFilter === 'hidden' && i.published) return false;
       if (!term) return true;
       return i.name.toLowerCase().includes(term) || i.sku.toLowerCase().includes(term);
     });
     const by = {
       revenue: (a, b) => b.revenue30 - a.revenue30,
-      stockAsc: (a, b) => levels[a.id] - levels[b.id],
+      stockAsc: (a, b) => a.stock - b.stock,
       priceDesc: (a, b) => b.price - a.price,
       name: (a, b) => a.name.localeCompare(b.name),
     };
     return [...list].sort(by[sort]);
-  }, [cat, stockFilter, q, sort, levels]);
+  }, [cat, stockFilter, q, sort, catalogue]);
 
-  const adjust = (id, delta) =>
-    setLevels((p) => ({ ...p, [id]: Math.max(0, p[id] + delta) }));
-
-  const lowCount = INVENTORY.filter((i) => stockState({ ...i, stock: levels[i.id] }) === 'low').length;
-  const outCount = INVENTORY.filter((i) => levels[i.id] === 0).length;
+  const lowCount = catalogue.filter((i) => stockState(i) === 'low').length;
+  const outCount = catalogue.filter((i) => i.stock === 0).length;
+  const hiddenCount = catalogue.filter((i) => !i.published).length;
 
   return (
     <>
@@ -57,12 +56,12 @@ export default function Products() {
       <div className={s.kpis}>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Products listed</span>
-          <div className={s.kpiValue}>{INVENTORY.length}</div>
+          <div className={s.kpiValue}>{catalogue.length}</div>
           <span className={s.kpiDelta}>Across {CATEGORIES.length} departments</span>
         </div>
         <div className={s.kpi}>
           <span className={s.kpiLabel}>Pieces on the shelf</span>
-          <div className={s.kpiValue}>{Object.values(levels).reduce((a, b) => a + b, 0).toLocaleString()}</div>
+          <div className={s.kpiValue}>{catalogue.reduce((a, i) => a + i.stock, 0).toLocaleString()}</div>
           <span className={s.kpiDelta}>Counted across every department</span>
         </div>
         <div className={`${s.kpi} ${lowCount ? s.kpiWarn : ''}`}>
@@ -75,12 +74,17 @@ export default function Products() {
           <div className={s.kpiValue}>{outCount}</div>
           <span className={`${s.kpiDelta} ${s.kpiBad}`}>Nobody can buy these</span>
         </div>
+        <div className={s.kpi}>
+          <span className={s.kpiLabel}>Hidden from the website</span>
+          <div className={s.kpiValue}>{hiddenCount}</div>
+          <span className={s.kpiDelta}>Still yours, just not on sale</span>
+        </div>
       </div>
 
       <div className={s.toolbar}>
         <div className={s.chips}>
           <button className={`${s.chip} ${cat === 'all' ? s.chipOn : ''}`} onClick={() => setCat('all')}>
-            All <i>{INVENTORY.length}</i>
+            All <i>{catalogue.length}</i>
           </button>
           {CATEGORIES.map((c) => (
             <button
@@ -88,7 +92,7 @@ export default function Products() {
               className={`${s.chip} ${cat === c.id ? s.chipOn : ''}`}
               onClick={() => setCat(c.id)}
             >
-              {c.short} <i>{INVENTORY.filter((i) => i.category === c.id).length}</i>
+              {c.short} <i>{catalogue.filter((i) => i.category === c.id).length}</i>
             </button>
           ))}
         </div>
@@ -119,16 +123,16 @@ export default function Products() {
           <table className={s.table}>
             <thead>
               <tr>
-                <th>Product</th><th>Code</th><th>Price</th>
-                <th>Sold this month</th><th>In stock</th><th>Add or remove</th>
+                <th>Product</th><th>Code</th><th>Price</th><th>Sold this month</th>
+                <th>In stock</th><th>Add or remove</th><th>On the website</th>
               </tr>
             </thead>
             <tbody>
               {rows.slice(0, shown).map((i) => {
-                const stock = levels[i.id];
-                const state = stockState({ ...i, stock });
+                const stock = i.stock;
+                const state = stockState(i);
                 return (
-                  <tr key={i.id} className={state !== 'ok' ? s.rowWarn : ''}>
+                  <tr key={i.id} className={`${state !== 'ok' ? s.rowWarn : ''} ${!i.published ? s.rowHidden : ''}`}>
                     <td>
                       <span className={s.cellProduct}>
                         <img src={i.image} alt="" loading="lazy" />
@@ -148,9 +152,20 @@ export default function Products() {
                     </td>
                     <td>
                       <span className={s.stepper}>
-                        <button onClick={() => adjust(i.id, -1)} aria-label={`Reduce stock for ${i.name}`}>&minus;</button>
-                        <button onClick={() => adjust(i.id, 10)} aria-label={`Add ten to ${i.name}`}>+10</button>
+                        <button onClick={() => live.adjustStock(i.id, i.name, -1, i.stock)} aria-label={`Reduce stock for ${i.name}`}>&minus;</button>
+                        <button onClick={() => live.adjustStock(i.id, i.name, 10, i.stock)} aria-label={`Add ten to ${i.name}`}>+10</button>
                       </span>
+                    </td>
+                    <td>
+                      <button
+                        className={`${s.toggle} ${i.published ? s.toggleOn : ''}`}
+                        onClick={() => live.setPublished(i.id, i.name, !i.published)}
+                        aria-pressed={i.published}
+                        aria-label={`${i.published ? 'Take' : 'Put'} ${i.name} ${i.published ? 'off' : 'on'} the website`}
+                      >
+                        <span />
+                        {i.published ? 'On sale' : 'Hidden'}
+                      </button>
                     </td>
                   </tr>
                 );

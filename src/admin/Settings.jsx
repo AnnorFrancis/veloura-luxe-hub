@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { STORE } from '../data/site';
-import { DISCOUNTS } from './data';
+import { useCodes } from '../store/useShop';
+import { live } from '../store/live';
 import Intro from './Intro';
 import s from './admin.module.css';
 
@@ -13,7 +14,7 @@ const SHIPPING = [
 
 export default function Settings() {
   const [saved, setSaved] = useState(false);
-  const [codes, setCodes] = useState(DISCOUNTS);
+  const codes = useCodes();
   const [toggles, setToggles] = useState({
     discreet: true,
     lowStockAlerts: true,
@@ -23,8 +24,8 @@ export default function Settings() {
   });
 
   const flip = (k) => setToggles((p) => ({ ...p, [k]: !p[k] }));
-  const flipCode = (code) =>
-    setCodes((p) => p.map((c) => (c.code === code ? { ...c, active: !c.active } : c)));
+  /* Switching a code off here stops it working at the website checkout. */
+  const flipCode = (code, active) => live.setCode(code, active);
 
   const save = (e) => {
     e.preventDefault();
@@ -143,6 +144,23 @@ export default function Settings() {
         <section className={s.card}>
           <header className={s.cardHead}>
             <div>
+              <span className={s.cardEyebrow}>Sample</span>
+              <h2>Start again</h2>
+            </div>
+          </header>
+          <p className={s.hint}>
+            This is a demonstration, so anything you sell, publish or change is
+            kept only in this browser. Put it all back the way it started at any
+            time.
+          </p>
+          <button className={s.ghostBtn} onClick={() => live.reset()}>
+            Reset the sample
+          </button>
+        </section>
+
+        <section className={s.card}>
+          <header className={s.cardHead}>
+            <div>
               <span className={s.cardEyebrow}>Discounts</span>
               <h2>Your codes</h2>
             </div>
@@ -167,7 +185,7 @@ export default function Settings() {
                     <td>
                       <button
                         className={`${s.toggle} ${c.active ? s.toggleOn : ''}`}
-                        onClick={() => flipCode(c.code)}
+                        onClick={() => flipCode(c.code, !c.active)}
                         aria-pressed={c.active}
                       >
                         <span />

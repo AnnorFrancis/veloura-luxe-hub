@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { PRODUCTS, CATEGORIES } from '../data/products';
+import { CATEGORIES } from '../data/products';
+import { useShopProducts } from '../store/useShop';
 import { cartApi } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { useReveal, useTilt } from '../hooks/useMotionKit';
@@ -38,7 +39,8 @@ export default function Product() {
   const ref = useReveal();
   const tilt = useTilt({ max: 6, scale: 1.015 });
 
-  const product = PRODUCTS.find((p) => p.id === id);
+  const products = useShopProducts();
+  const product = products.find((p) => p.id === id);
   const [size, setSize] = useState(product?.sizes?.[0] ?? null);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('detail');
@@ -57,7 +59,7 @@ export default function Product() {
   }
 
   const cat = CATEGORIES.find((c) => c.id === product.category);
-  const related = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
   const saved = wishlist.has(product.id);
 
   const add = () => {
