@@ -70,6 +70,24 @@ consistent between views and across reloads.
   and off
 - **Settings** shop details, operating preferences, delivery rates
 
+## One system, not two
+
+The website and the management system share a live layer
+(`src/store/live.js`), so a change on one side shows on the other without a
+reload. Open the shop in one tab and the management system in another and
+they stay in step.
+
+| Do this | See this |
+|---|---|
+| Unpublish a piece in Products | It leaves the shop, its product page, the department counts and any wishlist |
+| Check out on the website | The order arrives in Orders, stock drops, it appears in the live feed |
+| Sell at the counter | Same, and sold on credit it opens an account in the Credit Book |
+| Refund an order | The pieces go back on the shelf and back on sale |
+| Switch a discount code off in Settings | It stops working at the website checkout |
+
+Nothing is written to a server. Settings has a **Reset the sample** control
+so a demonstration can be given more than once.
+
 ## Departments
 
 Nine: panties, underwear, bikinis, body shapers, nightwear, socks, **table
